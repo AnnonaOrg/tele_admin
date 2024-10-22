@@ -1,0 +1,13 @@
+#cryptyAPI 加密货币地址 后台配置格式 cryptapi-trx,cryptapi-eth,cryptapi-bep20/bnb,cryptapi-polygon/usdt
+btc: ""
+btc_minvalue: ""
+trx: ""
+trx_minvalue: ""
+eth: ""
+eth_minvalue: ""
+polygon/usdt: ""
+polygon/usdt_minvalue: ""
+bep20/bnb: ""
+bep20/bnb_minvalue: ""
+trc20/usdt: ""
+trc20/usdt_minvalue: ""

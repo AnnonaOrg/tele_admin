@@ -1,0 +1,8 @@
+#!/bin/bash
+
+rm ./cmd/tele_admin/tele_admin
+
+#docker build -t annona/tele_admin:beta .   &&  docker push annona/tele_admin:beta
+docker build -t tele_admin:localhost .
+#docker image ls
+# docker buildx build .

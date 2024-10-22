@@ -1,0 +1,5 @@
+.DS_Store
+.env
+#annona
+_start_sh
+_build_docker

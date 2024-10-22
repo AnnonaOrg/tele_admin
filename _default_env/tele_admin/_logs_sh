@@ -1,0 +1,3 @@
+#!/bin/bash
+
+docker logs -f umfaka_core --tail 100

@@ -1,0 +1,17 @@
+#!/bin/bash
+apt update && apt -y upgrade && apt install -y docker docker.io docker-compose unzip && systemctl enable docker &&  systemctl start docker 
+
+##TLS
+# apt update &&  apt -y install nginx certbot python3-certbot-nginx
+# certbot --nginx
+
+# apt install -y apparmor apparmor-utils
+
+# cd db_redis && docker-compose up -d
+# cd ../db_postgres && docker-compose up -d
+# cd ../epusdt && docker-compose up -d
+# cd ../umfaka_core  && docker-compose up -d
+
+# cd db_redis && docker-compose up -d && cd ../db_postgres && docker-compose up -d && cd ../epusdt && docker-compose up -d && cd ../umfaka_core  && docker-compose up -d
+
+# apt install -y apparmor apparmor-utils

@@ -21,27 +21,54 @@ func DeleteBlockedUser(c tele.Context) {
 	}
 	botID = c.Bot().Me.ID
 	if !osenv.IsBotManagerID(userID) {
+		// if !IsChatAdmin(c) {
+		// 	return
+		// }
 		return
 	}
 	var targetUser int64
-	payload := c.Message().Payload
-
-	if strings.HasPrefix(payload, "@") {
-		username := strings.TrimPrefix(payload, "@")
-		item, err := service.GetBlockedUserByUsername(username)
-		if err != nil {
-			log.Errorf("GetBlockedUserByUsername(%s): %v", username, err)
-			return
+	// payload := c.Message().Payload
+	if c.Message().IsReply() {
+		if replyTo := c.Message().ReplyTo; replyTo != nil {
+			if sender := replyTo.Sender; sender != nil {
+				targetUser = sender.ID
+			}
 		}
-		targetUser = item.UserID
-	} else if id, err := strconv.ParseInt(payload, 10, 64); err != nil {
-		log.Errorf("ParseInt(%s): %v", payload, err)
+	} else if payload := c.Message().Payload; len(payload) > 0 {
+		if strings.HasPrefix(payload, "@") {
+			username := strings.TrimPrefix(payload, "@")
+			item, err := service.GetBlockedUserByUsername(username)
+			if err != nil {
+				log.Errorf("GetBlockedUserByUsername(%s): %v", username, err)
+				return
+			}
+			targetUser = item.UserID
+		} else if id, err := strconv.ParseInt(payload, 10, 64); err != nil {
+			log.Errorf("ParseInt(%s): %v", payload, err)
+			c.Reply("指令格式: /unban @用户名")
+			return
+		} else if id > 0 {
+			targetUser = id
+		}
+	} else {
 		c.Reply("指令格式: /unban @用户名")
 		return
-	} else if id > 0 {
-		targetUser = id
 	}
+	if userID == targetUser {
+		return
+	}
+
 	c.Bot().Unban(c.Chat(), &tele.User{ID: targetUser}, true)
+	chatMember := &tele.ChatMember{
+		User: &tele.User{
+			ID: targetUser,
+		},
+	}
+	chatMember.CanSendMessages = true
+	c.Bot().Restrict(
+		c.Chat(),
+		chatMember,
+	)
 
 	if err := service.DeleteBlockedUser(targetUser, botID); err != nil {
 		log.Errorf("DeleteBlockedUser(%d,%d): %v", targetUser, botID, err)

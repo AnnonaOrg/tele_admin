@@ -24,6 +24,9 @@ func AddBlockedUser(c tele.Context) {
 	botID = c.Bot().Me.ID
 	// 忽略非管理员消息
 	if isBotManagerID := osenv.IsBotManagerID(userID); !isBotManagerID {
+		// if !IsChatAdmin(c) {
+		// 	return
+		// }
 		return
 	}
 
@@ -42,10 +45,22 @@ func AddBlockedUser(c tele.Context) {
 				req.FirstName = sender.FirstName
 				req.LastName = sender.LastName
 				req.BotID = botID
+				if userID == sender.ID {
+					return
+				}
 				// c.Bot().BanSenderChat(
 				// 	c.Chat(),
 				// 	sender,
 				// )
+				chatMember := &tele.ChatMember{
+					User: &tele.User{
+						ID: sender.ID,
+					},
+				}
+				c.Bot().Restrict(
+					c.Chat(),
+					chatMember,
+				)
 			}
 
 			go func() {
@@ -64,6 +79,9 @@ func AddBlockedUser(c tele.Context) {
 				}
 				return
 			} else {
+				if userID == item.ID {
+					return
+				}
 				req.UserID = item.ID
 				req.UserName = item.Username
 				req.FirstName = item.FirstName

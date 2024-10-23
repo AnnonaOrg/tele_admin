@@ -36,9 +36,12 @@ func AddBlockedUser(c tele.Context) {
 	if c.Message().IsReply() {
 		if replyTo := c.Message().ReplyTo; replyTo != nil {
 			sender := replyTo.Sender
+			log.Debugf("Sender: %+v", sender)
 			if service.IsPenetrationShielding() {
 				sender = replyTo.OriginalSender
+				log.Debugf("OriginalSender: %+v", sender)
 			}
+
 			if sender != nil {
 				req.UserID = sender.ID
 				req.UserName = sender.Username
@@ -67,6 +70,9 @@ func AddBlockedUser(c tele.Context) {
 					c.Chat(),
 					chatMember,
 				)
+			} else {
+				log.Debugf("Sender is NULL: %+v", replyTo)
+				return
 			}
 
 			go func() {

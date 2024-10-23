@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION=0.0.2
+VERSION=0.0.3
 APPNAME=tele_admin
 echo ${APPNAME}
 echo "package constvar" > ./internal/constvar/version.go

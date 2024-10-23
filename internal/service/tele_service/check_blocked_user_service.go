@@ -18,22 +18,28 @@ func CheckBlockedUser(c tele.Context) error {
 	var userID, groupID int64
 	if service.IsPenetrationShielding() {
 		if sender := c.Message().OriginalSender; sender != nil {
+			log.Debugf("OriginalSender: %+v", sender)
 			userID = sender.ID
+		} else {
+			return nil
 		}
 	} else {
 		if sender := c.Message().Sender; sender != nil {
+			log.Debugf("Sender: %+v", sender)
 			userID = sender.ID
+		} else {
+			return nil
 		}
 	}
 	groupID = c.Message().Chat.ID
-	// log.Debugf("userID: %d,groupID: %d", userID, groupID)
+	log.Debugf("userID: %d,groupID: %d", userID, groupID)
 	if osenv.IsBotManagerID(userID) || IsChatAdmin(c, userID) {
 		return nil
 	}
 
-	if isForwarded := c.Message().IsForwarded(); isForwarded {
-		return fmt.Errorf("Message Sender(%d,%d) IsForwarded", userID, groupID)
-	}
+	// if isForwarded := c.Message().IsForwarded(); isForwarded {
+	// 	return fmt.Errorf("Message Sender(%d,%d) IsForwarded", userID, groupID)
+	// }
 
 	if count, err := service.GetCountBlockedUserByUserIDAndGroupID(userID, groupID); count > 0 {
 		return fmt.Errorf("Message Sender(%d,%d) is Blocked", userID, groupID)

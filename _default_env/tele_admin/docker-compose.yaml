@@ -1,8 +1,8 @@
 version: "3"
 services:
   tele_admin:
-    #image:  annona/tele_admin:latest
-    image:  annona/localhost:latest
+    image:  annona/tele_admin:latest
+    #image:  annona/localhost:latest
     container_name: tele_admin
     restart: always
     volumes:

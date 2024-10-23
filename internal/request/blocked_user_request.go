@@ -11,6 +11,7 @@ type BlockedUserRequest struct {
 	FirstName string `json:"first_name" form:"first_name" gorm:"-"`
 	LastName  string `json:"last_name" form:"last_name" gorm:"-"`
 
+	GroupID int64 `json:"group_id" form:"group_id" gorm:"-"`
 	// 机器人id
 	BotID int64 `json:"bot_id" form:"bot_id" gorm:"-"`
 

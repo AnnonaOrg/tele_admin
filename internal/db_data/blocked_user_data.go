@@ -4,35 +4,36 @@ import (
 	"fmt"
 
 	"github.com/umfaka/umfaka_core/internal/db"
-
 	"github.com/umfaka/umfaka_core/internal/db_model"
-	"github.com/umfaka/umfaka_core/internal/log"
+	// "github.com/umfaka/umfaka_core/internal/log"
 )
 
-func SetBlockedUser(userID int64, botID int64) error {
-	key := fmt.Sprintf("Tele_Admin_Black_List_%d", botID)
+// func SetBlockedUser(userID int64, botID int64) error {
+// 	key := fmt.Sprintf("Tele_Admin_Black_List_%d", botID)
 
-	return AddToSet(key, userID)
-}
-func CheckBlockedUser(userID int64, botID int64) bool {
-	key := fmt.Sprintf("Tele_Admin_Black_List_%d", botID)
+// 	return AddToSet(key, userID)
+// }
+// func CheckBlockedUser(userID int64, botID int64) bool {
+// 	key := fmt.Sprintf("Tele_Admin_Black_List_%d", botID)
 
-	if isBlocked, err := IsMemberOfSet(key, userID); err != nil {
-		log.Errorf("IsMemberOfSet(%s,%d): %v", key, userID, err)
-		return false
-	} else {
-		return isBlocked
-	}
-}
+// 	if isBlocked, err := IsMemberOfSet(key, userID); err != nil {
+// 		log.Errorf("IsMemberOfSet(%s,%d): %v", key, userID, err)
+// 		return false
+// 	} else {
+// 		return isBlocked
+// 	}
+// }
 
 // 创建信息
 func CreateBlockedUser(
 	userID int64, userName, firstName, lastName string,
+	groupID int64,
 	botID int64,
 	bossID int64,
 ) (*db_model.BlockedUser, error) {
 	item := db_model.NewBlockedUser(
 		userID, userName, firstName, lastName,
+		groupID,
 		botID,
 		bossID,
 	)
@@ -40,32 +41,51 @@ func CreateBlockedUser(
 	return item, err
 }
 
-func GetBlockedUserByUsername(username string) (*db_model.BlockedUser, error) {
+func GetBlockedUserByUsername(username string, groupID int64) (*db_model.BlockedUser, error) {
 	item := new(db_model.BlockedUser)
 	err := db.DB.Self.Model(item).
-		Where("user_name = ?", username).
+		Where("user_name = ? AND group_id = ?", username, groupID).
 		First(item).
 		Error
 	return item, err
 }
 
-func GetCountBlockedUserByUserIDAndBotID(userID, botID int64) (int64, error) {
+//	func GetCountBlockedUserByUserIDAndBotID(userID, botID int64) (int64, error) {
+//		var count int64
+//		item := new(db_model.BlockedUser)
+//		err := db.DB.Self.Model(item).
+//			Where("user_id = ? AND bot_id = ?", userID, botID).
+//			Count(&count).
+//			Error
+//		return count, err
+//	}
+func GetCountBlockedUserByUserIDAndGroupID(userID, groupID int64) (int64, error) {
 	var count int64
 	item := new(db_model.BlockedUser)
 	err := db.DB.Self.Model(item).
-		Where("user_id = ? AND bot_id = ?", userID, botID).
+		Where("user_id = ? AND group_id = ?", userID, groupID).
 		Count(&count).
 		Error
 	return count, err
 }
 
 // 删除信息记录
-func DeleteBlockedUser(userID, botID int64) error {
+//
+//	func DeleteBlockedUser(userID, botID int64) error {
+//		result := db.DB.Self.
+//			Where("bot_id = ? AND user_id = ?", botID, userID).
+//			Delete(&db_model.BlockedUser{})
+//		if result.RowsAffected == 0 {
+//			return fmt.Errorf("Delete(%d,%d): not_found", botID, userID)
+//		}
+//		return nil
+//	}
+func DeleteBlockedUser(userID, groupID int64) error {
 	result := db.DB.Self.
-		Where("bot_id = ? AND user_id = ?", botID, userID).
+		Where("user_id = ? AND group_id = ?", userID, groupID).
 		Delete(&db_model.BlockedUser{})
 	if result.RowsAffected == 0 {
-		return fmt.Errorf("Delete(%d,%d): not_found", botID, userID)
+		return fmt.Errorf("Delete(%d,%d): not_found", userID, groupID)
 	}
 	return nil
 }

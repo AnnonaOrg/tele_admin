@@ -17,15 +17,17 @@ import (
 
 func CreateBlockedUser(
 	userID int64, userName, firstName, lastName string,
+	groupID int64,
 	botID int64,
 	bossID int64,
 ) (*response.BlockedUserResponse, error) {
 	// 如果已经在屏蔽列表，终止后续操作
-	if count, _ := GetCountBlockedUserByUserIDAndBotID(userID, botID); count > 0 {
-		return nil, fmt.Errorf("GetCountBlockedUserByUserIDAndBotID(%d,%d): %d", userID, botID, count)
+	if count, _ := GetCountBlockedUserByUserIDAndGroupID(userID, groupID); count > 0 {
+		return nil, fmt.Errorf("GetCountBlockedUserByUserIDAndGroupID(%d,%d): %d", userID, groupID, count)
 	}
 	item, err := db_data.CreateBlockedUser(
 		userID, userName, firstName, lastName,
+		groupID,
 		botID,
 		bossID,
 	)
@@ -39,6 +41,7 @@ func CreateBlockedUser(
 		UserName:  item.UserName,
 		FirstName: item.FirstName,
 		LastName:  item.LastName,
+		GroupID:   item.GroupID,
 		// BossID:    item.BossID,
 		BotID: item.BotID,
 		Note:  item.Note,
@@ -46,10 +49,10 @@ func CreateBlockedUser(
 	return resp, nil
 }
 func CreateBlockedUserEx(req *request.BlockedUserRequest) (*response.BlockedUserResponse, error) {
-	return CreateBlockedUser(req.UserID, req.UserName, req.FirstName, req.LastName, req.BotID, req.BossID)
+	return CreateBlockedUser(req.UserID, req.UserName, req.FirstName, req.LastName, req.GroupID, req.BotID, req.BossID)
 }
-func GetBlockedUserByUsername(username string) (*response.BlockedUserResponse, error) {
-	item, err := db_data.GetBlockedUserByUsername(username)
+func GetBlockedUserByUsername(username string, groupID int64) (*response.BlockedUserResponse, error) {
+	item, err := db_data.GetBlockedUserByUsername(username, groupID)
 	if err != nil {
 		return nil, err
 	}
@@ -60,15 +63,24 @@ func GetBlockedUserByUsername(username string) (*response.BlockedUserResponse, e
 		UserName:  item.UserName,
 		FirstName: item.FirstName,
 		LastName:  item.LastName,
+		GroupID:   item.GroupID,
 		// BossID:    item.BossID,
 		BotID: item.BotID,
 		Note:  item.Note,
 	}
 	return resp, nil
 }
-func GetCountBlockedUserByUserIDAndBotID(userID, botID int64) (int64, error) {
-	return db_data.GetCountBlockedUserByUserIDAndBotID(userID, botID)
+
+//	func GetCountBlockedUserByUserIDAndBotID(userID, botID int64) (int64, error) {
+//		return db_data.GetCountBlockedUserByUserIDAndBotID(userID, botID)
+//	}
+//
+//	func DeleteBlockedUser(userID, botID int64) error {
+//		return db_data.DeleteBlockedUser(userID, botID)
+//	}
+func GetCountBlockedUserByUserIDAndGroupID(userID, groupID int64) (int64, error) {
+	return db_data.GetCountBlockedUserByUserIDAndGroupID(userID, groupID)
 }
-func DeleteBlockedUser(userID, botID int64) error {
-	return db_data.DeleteBlockedUser(userID, botID)
+func DeleteBlockedUser(userID, groupID int64) error {
+	return db_data.DeleteBlockedUser(userID, groupID)
 }

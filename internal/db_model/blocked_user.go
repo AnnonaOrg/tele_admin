@@ -16,6 +16,7 @@ type BlockedUser struct {
 	FirstName string `json:"first_name" form:"first_name" gorm:"column:first_name;"`
 	LastName  string `json:"last_name" form:"last_name" gorm:"column:last_name;"`
 
+	GroupID int64 `json:"group_id" form:"group_id" gorm:"column:group_id;"`
 	// 机器人id
 	BotID int64 `json:"bot_id" form:"bot_id" gorm:"column:bot_id;"`
 }
@@ -33,6 +34,7 @@ func (*BlockedUser) DefaultOrder() string {
 }
 func NewBlockedUser(
 	userID int64, userName, firstName, lastName string,
+	groupID int64,
 	botID int64,
 	bossID int64,
 ) *BlockedUser {
@@ -41,6 +43,7 @@ func NewBlockedUser(
 		UserName:  userName,
 		FirstName: firstName,
 		LastName:  lastName,
+		GroupID:   groupID,
 		BotID:     botID,
 	}
 	item.BossID = bossID

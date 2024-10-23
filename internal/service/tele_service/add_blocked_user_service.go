@@ -17,16 +17,17 @@ func AddBlockedUser(c tele.Context) {
 	if isFromGroup := c.Message().FromGroup(); !isFromGroup {
 		return
 	}
-	var userID, botID int64
+	var userID, botID, groupID int64
 	if sender := c.Message().Sender; sender != nil {
 		userID = sender.ID
 	}
 	botID = c.Bot().Me.ID
+	groupID = c.Message().Chat.ID
 	// 忽略非管理员消息
 	if isBotManagerID := osenv.IsBotManagerID(userID); !isBotManagerID {
-		// if !IsChatAdmin(c) {
-		// 	return
-		// }
+		if !IsChatAdmin(c) {
+			return
+		}
 		return
 	}
 
@@ -37,6 +38,8 @@ func AddBlockedUser(c tele.Context) {
 	// }
 
 	var req request.BlockedUserRequest
+	req.BotID = botID
+	req.GroupID = groupID
 	if c.Message().IsReply() {
 		if replyTo := c.Message().ReplyTo; replyTo != nil {
 			if sender := replyTo.Sender; sender != nil {
@@ -44,7 +47,8 @@ func AddBlockedUser(c tele.Context) {
 				req.UserName = sender.Username
 				req.FirstName = sender.FirstName
 				req.LastName = sender.LastName
-				req.BotID = botID
+				// req.BotID = botID
+				// req.GroupID = groupID
 				if userID == sender.ID {
 					return
 				}
@@ -86,7 +90,8 @@ func AddBlockedUser(c tele.Context) {
 				req.UserName = item.Username
 				req.FirstName = item.FirstName
 				req.LastName = item.LastName
-				req.BotID = botID
+				// req.BotID = botID
+				// req.GroupID = groupID
 			}
 
 		} else {

@@ -21,10 +21,9 @@ func DeleteBlockedUser(c tele.Context) {
 	}
 
 	groupID = c.Message().Chat.ID
-	if !osenv.IsBotManagerID(userID) {
-		if !IsChatAdmin(c) {
-			return
-		}
+	log.Debugf("userID: %d,groupID: %d", userID, groupID)
+	// 忽略非管理员消息
+	if !osenv.IsBotManagerID(userID) && !IsChatAdmin(c, userID) {
 		return
 	}
 	var targetUser int64

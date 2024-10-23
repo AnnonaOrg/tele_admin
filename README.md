@@ -1,24 +1,16 @@
 tele_admin
 
+### 简介
 
-#设置webhook
-```bash
-curl https://api.telegram.org/bot[botToken]/setWebhook?url=https://umfaka.getchat.work/webhook/tele/[botToken]
-```
+群内屏蔽用户发言，自动删除非管理员转发消息。
 
-清除webhook
-```bash
-curl https://api.telegram.org/bot{TOKEN}/deletewebhook
-```
+### 功能列表：
 
-查看webhook
-```bash
-curl https://api.telegram.org/bot{TOKEN}/getwebhookinfo
-```
+1. /ban 屏蔽用户
+2. /unban 解除屏蔽
 
+### 使用步骤
 
-查看Getme
-```
-curl -X GET https://api.telegram.org/bot123456:ABCDEF/getMe
-```
-
+1. 安装docker环境
+2. 修改 .env_default 为 .env 并配置bot token 和 管理员ID
+3. docker-compose up -d

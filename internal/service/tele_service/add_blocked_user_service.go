@@ -47,8 +47,7 @@ func AddBlockedUser(c tele.Context) {
 				req.UserName = sender.Username
 				req.FirstName = sender.FirstName
 				req.LastName = sender.LastName
-				// req.BotID = botID
-				// req.GroupID = groupID
+
 				if userID == sender.ID {
 					return
 				}
@@ -57,19 +56,7 @@ func AddBlockedUser(c tele.Context) {
 					c.Reply("神仙打架，凡人躲在一旁看热闹，结果还是被波及了，真是个‘不想当旁观者的’命运！")
 					return
 				}
-				// c.Bot().BanSenderChat(
-				// 	c.Chat(),
-				// 	sender,
-				// )
-				chatMember := &tele.ChatMember{
-					User: &tele.User{
-						ID: sender.ID,
-					},
-				}
-				c.Bot().Restrict(
-					c.Chat(),
-					chatMember,
-				)
+
 			} else {
 				log.Debugf("Sender is NULL: %+v", replyTo)
 				return
@@ -96,8 +83,7 @@ func AddBlockedUser(c tele.Context) {
 				req.UserName = item.Username
 				req.FirstName = item.FirstName
 				req.LastName = item.LastName
-				// req.BotID = botID
-				// req.GroupID = groupID
+
 				if userID == item.ID {
 					return
 				}
@@ -115,6 +101,22 @@ func AddBlockedUser(c tele.Context) {
 	} else {
 		c.Reply("指令格式: /ban @用户名")
 		return
+	}
+
+	if !service.IsPenetrationShielding() {
+		// c.Bot().BanSenderChat(
+		// 	c.Chat(),
+		// 	sender,
+		// )
+
+		c.Bot().Restrict(
+			c.Chat(),
+			&tele.ChatMember{
+				User: &tele.User{
+					ID: req.UserID,
+				},
+			},
+		)
 	}
 
 	log.Debugf("req: %+v", req)

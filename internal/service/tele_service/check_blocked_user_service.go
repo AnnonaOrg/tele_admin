@@ -20,7 +20,7 @@ func CheckBlockedUser(c tele.Context) error {
 		userID = sender.ID
 	}
 	groupID = c.Message().Chat.ID
-	log.Debugf("userID: %d,groupID: %d", userID, groupID)
+	// log.Debugf("userID: %d,groupID: %d", userID, groupID)
 	if osenv.IsBotManagerID(userID) || IsChatAdmin(c, userID) {
 		return nil
 	}

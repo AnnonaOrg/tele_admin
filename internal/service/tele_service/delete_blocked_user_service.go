@@ -15,15 +15,16 @@ func DeleteBlockedUser(c tele.Context) {
 	if isFromGroup := c.Message().FromGroup(); !isFromGroup {
 		return
 	}
-	var userID, botID int64
+	var userID, groupID int64
 	if sender := c.Message().Sender; sender != nil {
 		userID = sender.ID
 	}
-	botID = c.Bot().Me.ID
+
+	groupID = c.Message().Chat.ID
 	if !osenv.IsBotManagerID(userID) {
-		// if !IsChatAdmin(c) {
-		// 	return
-		// }
+		if !IsChatAdmin(c) {
+			return
+		}
 		return
 	}
 	var targetUser int64
@@ -37,7 +38,7 @@ func DeleteBlockedUser(c tele.Context) {
 	} else if payload := c.Message().Payload; len(payload) > 0 {
 		if strings.HasPrefix(payload, "@") {
 			username := strings.TrimPrefix(payload, "@")
-			item, err := service.GetBlockedUserByUsername(username)
+			item, err := service.GetBlockedUserByUsername(username, groupID)
 			if err != nil {
 				log.Errorf("GetBlockedUserByUsername(%s): %v", username, err)
 				return
@@ -70,8 +71,8 @@ func DeleteBlockedUser(c tele.Context) {
 		chatMember,
 	)
 
-	if err := service.DeleteBlockedUser(targetUser, botID); err != nil {
-		log.Errorf("DeleteBlockedUser(%d,%d): %v", targetUser, botID, err)
+	if err := service.DeleteBlockedUser(targetUser, groupID); err != nil {
+		log.Errorf("DeleteBlockedUser(%d,%d): %v", targetUser, groupID, err)
 		return
 	}
 	if err := c.Reply("🟢操作成功"); err != nil {

@@ -11,6 +11,7 @@ type BlockedUserResponse struct {
 	FirstName string `json:"first_name" form:"first_name" gorm:"-"`
 	LastName  string `json:"last_name" form:"last_name" gorm:"-"`
 
+	GroupID int64 `json:"group_id" form:"group_id" gorm:"-"`
 	// // Boss ID
 	// BossID int64 `json:"boss_id" form:"boss_id" gorm:"-"`
 	// 机器人id

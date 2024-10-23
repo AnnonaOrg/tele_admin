@@ -14,25 +14,29 @@ func CheckBlockedUser(c tele.Context) error {
 	if isFromGroup := c.Message().FromGroup(); !isFromGroup {
 		return nil
 	}
-	var userID, botID int64
+	if IsChatAdmin(c) {
+		return nil
+	}
+	var userID, groupID int64
 	if sender := c.Message().Sender; sender != nil {
 		userID = sender.ID
 	}
-	botID = c.Bot().Me.ID
+	groupID = c.Message().Chat.ID
+	// botID = c.Bot().Me.ID
 	if osenv.IsBotManagerID(userID) {
 		return nil
 	}
 
 	if isForwarded := c.Message().IsForwarded(); isForwarded {
-		return fmt.Errorf("Message Sender(%d,%d) IsForwarded", userID, botID)
+		return fmt.Errorf("Message Sender(%d,%d) IsForwarded", userID, groupID)
 	}
 	// if isBlocked := service.CheckBlockedUser(userID, botID); isBlocked {
 	// 	return fmt.Errorf("Message Sender(%d,%d) is Blocked", userID, botID)
 	// }
-	if count, err := service.GetCountBlockedUserByUserIDAndBotID(userID, botID); count > 0 {
-		return fmt.Errorf("Message Sender(%d,%d) is Blocked", userID, botID)
+	if count, err := service.GetCountBlockedUserByUserIDAndGroupID(userID, groupID); count > 0 {
+		return fmt.Errorf("Message Sender(%d,%d) is Blocked", userID, groupID)
 	} else if err != nil {
-		log.Errorf("GetCountBlockedUserByUserIDAndBotID(%d,%d): %v", userID, botID, err)
+		log.Errorf("GetCountBlockedUserByUserIDAndGroupID(%d,%d): %v", userID, groupID, err)
 	}
 	return nil
 }

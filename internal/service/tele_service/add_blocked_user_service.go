@@ -30,12 +30,6 @@ func AddBlockedUser(c tele.Context) {
 		return
 	}
 
-	// text := c.Message().Text
-	// log.Debugf("Message().Text: %s", text)
-	// if isFlag := strings.EqualFold(text, "标记"); !isFlag {
-	// 	return
-	// }
-
 	var req request.BlockedUserRequest
 	req.BotID = botID
 	req.GroupID = groupID

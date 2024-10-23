@@ -1,7 +1,6 @@
 package tele_service
 
 import (
-	// "github.com/umfaka/umfaka_core/internal/log"
 	tele "gopkg.in/telebot.v3"
 )
 

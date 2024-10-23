@@ -23,19 +23,12 @@ func AddBlockedUser(c tele.Context) {
 	}
 	botID = c.Bot().Me.ID
 	groupID = c.Message().Chat.ID
+	log.Debugf("userID: %d,groupID: %d", userID, groupID)
 	// 忽略非管理员消息
-	if isBotManagerID := osenv.IsBotManagerID(userID); !isBotManagerID {
-		if !IsChatAdmin(c) {
-			return
-		}
+	if !osenv.IsBotManagerID(userID) && !IsChatAdmin(c, userID) {
+		log.Debugf("忽略非管理员(%d)指令", userID)
 		return
 	}
-
-	// text := c.Message().Text
-	// log.Debugf("Message().Text: %s", text)
-	// if isFlag := strings.EqualFold(text, "标记"); !isFlag {
-	// 	return
-	// }
 
 	var req request.BlockedUserRequest
 	req.BotID = botID
@@ -50,6 +43,11 @@ func AddBlockedUser(c tele.Context) {
 				// req.BotID = botID
 				// req.GroupID = groupID
 				if userID == sender.ID {
+					return
+				}
+				if IsChatAdmin(c, req.UserID) {
+					log.Debugf("IsChatAdmin(%d): Yes", req.UserID)
+					c.Reply("神仙打架，凡人躲在一旁看热闹，结果还是被波及了，真是个‘不想当旁观者的’命运！")
 					return
 				}
 				// c.Bot().BanSenderChat(
@@ -83,15 +81,21 @@ func AddBlockedUser(c tele.Context) {
 				}
 				return
 			} else {
-				if userID == item.ID {
-					return
-				}
+
 				req.UserID = item.ID
 				req.UserName = item.Username
 				req.FirstName = item.FirstName
 				req.LastName = item.LastName
 				// req.BotID = botID
 				// req.GroupID = groupID
+				if userID == item.ID {
+					return
+				}
+				if IsChatAdmin(c, req.UserID) {
+					log.Debugf("IsChatAdmin(%d): Yes", req.UserID)
+					c.Reply("神仙打架，凡人躲在一旁看热闹，结果还是被波及了，真是个‘不想当旁观者的’命运！")
+					return
+				}
 			}
 
 		} else {

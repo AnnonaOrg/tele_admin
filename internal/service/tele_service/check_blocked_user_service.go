@@ -16,8 +16,14 @@ func CheckBlockedUser(c tele.Context) error {
 	}
 
 	var userID, groupID int64
-	if sender := c.Message().Sender; sender != nil {
-		userID = sender.ID
+	if service.IsPenetrationShielding() {
+		if sender := c.Message().OriginalSender; sender != nil {
+			userID = sender.ID
+		}
+	} else {
+		if sender := c.Message().Sender; sender != nil {
+			userID = sender.ID
+		}
 	}
 	groupID = c.Message().Chat.ID
 	// log.Debugf("userID: %d,groupID: %d", userID, groupID)

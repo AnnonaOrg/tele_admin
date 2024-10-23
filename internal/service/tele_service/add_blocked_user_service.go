@@ -23,7 +23,7 @@ func AddBlockedUser(c tele.Context) {
 	}
 	botID = c.Bot().Me.ID
 	groupID = c.Message().Chat.ID
-	log.Debugf("userID: %d,groupID: %d", userID, groupID)
+	// log.Debugf("userID: %d,groupID: %d", userID, groupID)
 	// 忽略非管理员消息
 	if !osenv.IsBotManagerID(userID) && !IsChatAdmin(c, userID) {
 		log.Debugf("忽略非管理员(%d)指令", userID)
